@@ -1284,4 +1284,131 @@ mod tests {
         assert_eq!(generator.format_type_name("foo.Bar"), "foo.Bar");
         assert_eq!(generator.format_type_name(".Bar"), "Bar");
     }
+
+    #[test]
+    fn test_basic_message_generation() {
+        use crate::parse_proto_to_file_descriptor;
+
+        let proto = r#"
+syntax = "proto3";
+package test;
+
+message User {
+  string name = 1;
+  int32 age = 2;
+}
+"#;
+
+        let descriptor = parse_proto_to_file_descriptor(proto).unwrap();
+        let result = descriptor_to_proto(&descriptor).unwrap();
+
+        assert!(result.contains("syntax = \"proto3\";"));
+        assert!(result.contains("package test;"));
+        assert!(result.contains("message User"));
+        assert!(result.contains("string name = 1;"));
+        assert!(result.contains("int32 age = 2;"));
+    }
+
+    #[test]
+    fn test_enum_generation() {
+        use crate::parse_proto_to_file_descriptor;
+
+        let proto = r#"
+syntax = "proto3";
+
+enum Status {
+  UNKNOWN = 0;
+  ACTIVE = 1;
+  INACTIVE = 2;
+}
+"#;
+
+        let descriptor = parse_proto_to_file_descriptor(proto).unwrap();
+        let result = descriptor_to_proto(&descriptor).unwrap();
+
+        assert!(result.contains("enum Status"));
+        assert!(result.contains("UNKNOWN = 0;"));
+        assert!(result.contains("ACTIVE = 1;"));
+        assert!(result.contains("INACTIVE = 2;"));
+    }
+
+    #[test]
+    fn test_service_generation() {
+        use crate::parse_proto_to_file_descriptor;
+
+        let proto = r#"
+syntax = "proto3";
+
+message Request {}
+message Response {}
+
+service UserService {
+  rpc GetUser(Request) returns (Response);
+}
+"#;
+
+        let descriptor = parse_proto_to_file_descriptor(proto).unwrap();
+        let result = descriptor_to_proto(&descriptor).unwrap();
+
+        assert!(result.contains("service UserService"));
+        assert!(result.contains("rpc GetUser"));
+        assert!(result.contains("Request"));
+        assert!(result.contains("Response"));
+    }
+
+    #[test]
+    fn test_nested_message_generation() {
+        use crate::parse_proto_to_file_descriptor;
+
+        let proto = r#"
+syntax = "proto3";
+
+message Outer {
+  message Inner {
+    string value = 1;
+  }
+  Inner inner = 1;
+}
+"#;
+
+        let descriptor = parse_proto_to_file_descriptor(proto).unwrap();
+        let result = descriptor_to_proto(&descriptor).unwrap();
+
+        assert!(result.contains("message Outer"));
+        assert!(result.contains("message Inner"));
+        assert!(result.contains("string value = 1;"));
+    }
+
+    #[test]
+    fn test_deterministic_sorting() {
+        use crate::parse_proto_to_file_descriptor;
+
+        let proto1 = r#"
+syntax = "proto3";
+
+message B { string x = 1; }
+message A { string y = 1; }
+"#;
+
+        let proto2 = r#"
+syntax = "proto3";
+
+message A { string y = 1; }
+message B { string x = 1; }
+"#;
+
+        let desc1 = parse_proto_to_file_descriptor(proto1).unwrap();
+        let desc2 = parse_proto_to_file_descriptor(proto2).unwrap();
+
+        let result1 = descriptor_to_proto(&desc1).unwrap();
+        let result2 = descriptor_to_proto(&desc2).unwrap();
+
+        // Should produce identical output (sorted)
+        assert_eq!(result1, result2);
+
+        // A should come before B
+        let a_pos = result1.find("message A").unwrap();
+        let b_pos = result1.find("message B").unwrap();
+        assert!(a_pos < b_pos);
+    }
 }

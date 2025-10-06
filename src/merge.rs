@@ -592,4 +592,157 @@ message B {}
         assert_eq!(results1[0].content, results2[0].content);
         assert_eq!(results1[0].fingerprint, results2[0].fingerprint);
     }
+
+    #[test]
+    fn test_duplicate_enum_error() {
+        let file1 = r#"
+syntax = "proto3";
+package test;
+
+enum Status {
+  UNKNOWN = 0;
+  ACTIVE = 1;
+}
+"#;
+
+        let file2 = r#"
+syntax = "proto3";
+package test;
+
+enum Status {
+  INACTIVE = 0;
+}
+"#;
+
+        let result = merge_by_package(vec![file1, file2]);
+        assert!(result.is_err());
+        let err = result.unwrap_err();
+        assert!(err.to_string().contains("Duplicate enum 'Status'"));
+    }
+
+    #[test]
+    fn test_duplicate_service_error() {
+        let file1 = r#"
+syntax = "proto3";
+package test;
+
+message Request {}
+message Response {}
+
+service UserService {
+  rpc GetUser(Request) returns (Response);
+}
+"#;
+
+        let file2 = r#"
+syntax = "proto3";
+package test;
+
+message Request {}
+message Response {}
+
+service UserService {
+  rpc UpdateUser(Request) returns (Response);
+}
+"#;
+
+        let result = merge_by_package(vec![file1, file2]);
+        assert!(result.is_err());
+        let err = result.unwrap_err();
+        let err_msg = err.to_string();
+        // Check for either duplicate service or duplicate message error
+        assert!(
+            err_msg.contains("Duplicate service 'UserService'")
+                || err_msg.contains("Duplicate message"),
+            "Unexpected error: {err_msg}"
+        );
+    }
+
+    #[test]
+    fn test_merge_with_imports() {
+        let file1 = r#"
+syntax = "proto3";
+package test;
+
+import "google/protobuf/empty.proto";
+
+message User {
+  string name = 1;
+}
+"#;
+
+        let file2 = r#"
+syntax = "proto3";
+package test;
+
+import "google/protobuf/timestamp.proto";
+
+message Profile {
+  int32 age = 1;
+}
+"#;
+
+        let results = merge_by_package(vec![file1, file2]).unwrap();
+        assert_eq!(results.len(), 1);
+
+        // Both imports should be present and sorted
+        let content = &results[0].content;
+        assert!(content.contains("google/protobuf/empty.proto"));
+        assert!(content.contains("google/protobuf/timestamp.proto"));
+
+        // Verify import order (alphabetically sorted)
+        let empty_pos = content.find("google/protobuf/empty.proto").unwrap();
+        let timestamp_pos = content.find("google/protobuf/timestamp.proto").unwrap();
+        assert!(empty_pos < timestamp_pos);
+    }
+
+    #[test]
+    fn test_merge_mixed_content() {
+        let file1 = r#"
+syntax = "proto3";
+package test;
+
+message User {
+  string name = 1;
+}
+
+message Profile {
+  int32 age = 1;
+}
+
+enum Role {
+  ADMIN = 0;
+  USER = 1;
+}
+"#;
+
+        let file2 = r#"
+syntax = "proto3";
+package test;
+
+message Request {
+  string query = 1;
+}
+
+message Response {
+  string result = 1;
+}
+
+service UserService {
+  rpc Search(Request) returns (Response);
+}
+"#;
+
+        let results = merge_by_package(vec![file1, file2]).unwrap();
+        assert_eq!(results.len(), 1);
+
+        let content = &results[0].content;
+        // All definitions should be present
+        assert!(content.contains("message User"));
+        assert!(content.contains("message Profile"));
+        assert!(content.contains("message Request"));
+        assert!(content.contains("message Response"));
+        assert!(content.contains("enum Role"));
+        assert!(content.contains("service UserService"));
+    }
 }

@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package test.maps;
+
+// Various map type combinations
+message MapExamples {
+  // Scalar key, scalar value
+  map<string, int32> string_to_int = 1;
+  map<int32, string> int_to_string = 2;
+  map<int64, bool> int64_to_bool = 3;
+  map<uint32, double> uint32_to_double = 4;
+  map<bool, string> bool_to_string = 5;
+
+  // Map with message value
+  map<string, NestedMessage> string_to_message = 6;
+
+  // Map with enum value
+  map<string, Status> string_to_enum = 7;
+
+  // Multiple maps
+  map<string, bytes> string_to_bytes = 8;
+  map<fixed64, sfixed32> fixed_to_sfixed = 9;
+}
+
+message NestedMessage {
+  string name = 1;
+  int32 value = 2;
+
+  // Nested map
+  map<string, int32> nested_map = 3;
+}
+
+enum Status {
+  UNKNOWN = 0;
+  ACTIVE = 1;
+  INACTIVE = 2;
+}
+
+// Message with only maps
+message OnlyMaps {
+  map<string, string> map1 = 1;
+  map<int32, int32> map2 = 2;
+}

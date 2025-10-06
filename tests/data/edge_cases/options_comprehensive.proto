@@ -1,0 +1,50 @@
+syntax = "proto3";
+
+package test.options;
+
+// File-level options (comprehensive)
+option java_package = "com.example.test";
+option java_outer_classname = "TestProto";
+option java_multiple_files = true;
+option go_package = "example.com/test";
+option cc_enable_arenas = true;
+option objc_class_prefix = "TST";
+option csharp_namespace = "Test.Options";
+option swift_prefix = "TST";
+option php_class_prefix = "Test";
+option php_namespace = "Test\\Options";
+option php_metadata_namespace = "Test\\Options\\Metadata";
+option ruby_package = "Test::Options";
+
+// Message with various options
+message MessageWithOptions {
+  option deprecated = true;
+
+  string field1 = 1;
+  int32 field2 = 2 [deprecated = true];
+  bytes field3 = 3 [lazy = true];
+  repeated int32 field4 = 4 [packed = true];
+  repeated int32 field5 = 5 [packed = false];
+}
+
+// Enum with options
+enum EnumWithOptions {
+  option allow_alias = true;
+  option deprecated = true;
+
+  UNKNOWN = 0;
+  FIRST = 1;
+  ALIAS_FIRST = 1;  // alias
+  SECOND = 2 [deprecated = true];
+}
+
+// Service with options
+service ServiceWithOptions {
+  option deprecated = true;
+
+  rpc DeprecatedMethod(MessageWithOptions) returns (MessageWithOptions) {
+    option deprecated = true;
+  }
+
+  rpc NormalMethod(MessageWithOptions) returns (MessageWithOptions);
+}

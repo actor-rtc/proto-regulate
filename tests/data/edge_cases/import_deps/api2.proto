@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+package test.imports.api;
+
+message ApiMessage2 {
+  string value = 1;
+}

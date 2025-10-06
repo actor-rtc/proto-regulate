@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package test.optional;
+
+// Proto3 optional fields (added in proto3.15)
+message OptionalFields {
+  // Optional scalar types
+  optional int32 optional_int32 = 1;
+  optional int64 optional_int64 = 2;
+  optional uint32 optional_uint32 = 3;
+  optional uint64 optional_uint64 = 4;
+  optional sint32 optional_sint32 = 5;
+  optional sint64 optional_sint64 = 6;
+  optional fixed32 optional_fixed32 = 7;
+  optional fixed64 optional_fixed64 = 8;
+  optional sfixed32 optional_sfixed32 = 9;
+  optional sfixed64 optional_sfixed64 = 10;
+  optional bool optional_bool = 11;
+  optional string optional_string = 12;
+  optional bytes optional_bytes = 13;
+  optional float optional_float = 14;
+  optional double optional_double = 15;
+
+  // Optional message
+  optional NestedMessage optional_message = 16;
+
+  // Optional enum
+  optional Status optional_enum = 17;
+
+  // Mix with regular fields
+  string regular_string = 18;
+  int32 regular_int = 19;
+}
+
+message NestedMessage {
+  optional string name = 1;
+  optional int32 value = 2;
+}
+
+enum Status {
+  UNKNOWN = 0;
+  ACTIVE = 1;
+  INACTIVE = 2;
+}

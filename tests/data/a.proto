@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package test.package;
+
+import "google/protobuf/empty.proto";
+
+// This is a comment that should be ignored.
+message TestMessage {
+  string name = 2;
+  int32 id = 1; // Fields should be sorted by number, not order in file.
+
+  enum TestEnum {
+    DEFAULT = 0;
+    ACTIVE = 1;
+  }
+
+  TestEnum status = 3;
+}
+
+service TestService {
+  rpc DoSomething(TestMessage) returns (google.protobuf.Empty);
+}

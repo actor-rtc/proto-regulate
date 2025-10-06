@@ -1,0 +1,67 @@
+syntax = "proto2";
+
+package test.proto2;
+
+// Proto2 specific features
+message Proto2Features {
+  // Required fields
+  required string required_string = 1;
+  required int32 required_int = 2;
+
+  // Optional with defaults
+  optional string optional_with_default = 3 [default = "default_value"];
+  optional int32 int_with_default = 4 [default = 42];
+  optional bool bool_with_default = 5 [default = true];
+  optional double double_with_default = 6 [default = 3.14];
+  optional float float_with_default = 7 [default = 2.718];
+  optional bytes bytes_with_default = 8 [default = "default_bytes"];
+
+  // Enum with default
+  optional Status status_with_default = 9 [default = ACTIVE];
+
+  // Repeated fields
+  repeated string repeated_strings = 10;
+  repeated int32 repeated_ints = 11 [packed = true];
+
+  // Groups (deprecated but valid in proto2)
+  optional group MyGroup = 12 {
+    optional string group_field1 = 13;
+    optional int32 group_field2 = 14;
+  }
+
+  repeated group RepeatedGroup = 15 {
+    optional string repeated_group_field = 16;
+  }
+}
+
+enum Status {
+  UNKNOWN = 0;
+  ACTIVE = 1;
+  INACTIVE = 2;
+}
+
+// Message with all required fields
+message AllRequired {
+  required string field1 = 1;
+  required int32 field2 = 2;
+  required bool field3 = 3;
+}
+
+// Message with various default values
+message DefaultValues {
+  optional string string_default = 1 [default = "hello"];
+  optional int32 positive_int = 2 [default = 100];
+  optional int32 negative_int = 3 [default = -100];
+  optional int64 large_int = 4 [default = 9223372036854775807];
+  optional float float_val = 5 [default = 1.5];
+  optional double double_val = 6 [default = -2.5];
+  optional bool true_val = 7 [default = true];
+  optional bool false_val = 8 [default = false];
+  optional EnumWithDefaults enum_val = 9 [default = VALUE2];
+}
+
+enum EnumWithDefaults {
+  VALUE0 = 0;
+  VALUE1 = 1;
+  VALUE2 = 2;
+}

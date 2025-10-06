@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package test.imports;
+
+// Test various import combinations and sorting
+import "import_deps/first.proto";
+import "import_deps/last.proto";
+import "import_deps/middle.proto";
+
+// Public imports
+import public "import_deps/api1.proto";
+import public "import_deps/api2.proto";
+
+// Weak imports
+import weak "import_deps/deprecated1.proto";
+import weak "import_deps/deprecated2.proto";
+
+message ImportTest {
+  string field = 1;
+  int32 count = 2;
+}

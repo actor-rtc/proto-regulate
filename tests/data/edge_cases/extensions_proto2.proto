@@ -1,0 +1,44 @@
+syntax = "proto2";
+
+package test.extensions;
+
+// Base message with extension ranges
+message ExtendableMessage {
+  optional string base_field = 1;
+  extensions 100 to 199;
+  extensions 1000 to max;
+}
+
+// Extension in same file
+extend ExtendableMessage {
+  optional int32 my_extension = 100;
+  optional string another_extension = 101;
+}
+
+// Nested message with extensions
+message Outer {
+  message Inner {
+    optional string inner_field = 1;
+    extensions 10 to 20;
+  }
+
+  optional Inner inner = 1;
+}
+
+extend Outer.Inner {
+  optional int32 inner_extension = 10;
+}
+
+// Multiple extensions to same message
+extend ExtendableMessage {
+  optional bool third_extension = 102;
+}
+
+// Extension with message type
+message ExtensionData {
+  optional string data = 1;
+}
+
+extend ExtendableMessage {
+  optional ExtensionData complex_extension = 103;
+}

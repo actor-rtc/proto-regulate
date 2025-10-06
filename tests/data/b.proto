@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package test.package;
+
+import "google/protobuf/empty.proto";
+
+// This message is semantically different from TestMessage in a.proto
+message TestMessage {
+  string name = 2;
+  int64 id = 1; // <--- Changed from int32 to int64
+
+  enum TestEnum {
+    DEFAULT = 0;
+    ACTIVE = 1;
+  }
+
+  TestEnum status = 3;
+}
+
+service TestService {
+  rpc DoSomething(TestMessage) returns (google.protobuf.Empty);
+}

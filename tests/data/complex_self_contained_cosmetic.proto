@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+package com.example.complex;
+
+// Imports for standard Google types
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+
+
+// Represents a user of the system.
+message UserProfile {
+  string user_id = 1; // Unique identifier
+  string email   = 2;
+  google.protobuf.Timestamp created_at = 3;
+}
+
+
+// A request to our search service.
+message SearchRequest {
+  string query = 1;
+  int32 page_number = 2; // Which page to retrieve.
+  int32 result_per_page = 3;
+
+  // The corpus to search within.
+  enum Corpus {
+    UNIVERSAL = 0;
+    WEB       = 1;
+    IMAGES    = 2;
+    NEWS      = 3;
+    PRODUCTS  = 4;
+    VIDEO     = 5;
+  }
+
+  Corpus corpus = 4;
+}
+
+// A response from our search service.
+message SearchResponse {
+  // A single search result.
+  message Result {
+    string url = 1;
+    string title = 2;
+    repeated string snippets = 3;
+  }
+
+  repeated Result results = 1;
+}
+
+// The main search service definition.
+service SearchService {
+  // Performs a search.
+  rpc Search(SearchRequest) returns (SearchResponse);
+  // Retrieves a user profile.
+  rpc GetUserProfile(google.protobuf.StringValue) returns (UserProfile);
+}

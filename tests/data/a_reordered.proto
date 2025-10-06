@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package test.package;
+
+import "google/protobuf/empty.proto";
+
+// Fields are reordered in the source file.
+// The fingerprint should be the same as a.proto because we sort by field number.
+message TestMessage {
+  TestEnum status = 3;
+  string name = 2;
+  int32 id = 1;
+
+  enum TestEnum {
+    DEFAULT = 0;
+    ACTIVE = 1;
+  }
+}
+
+service TestService {
+  rpc DoSomething(TestMessage) returns (google.protobuf.Empty);
+}

@@ -1,0 +1,146 @@
+syntax = "proto3";
+
+package test.complex;
+
+// Import combinations
+import "import_deps/first.proto";
+import public "import_deps/api1.proto";
+import weak "import_deps/deprecated1.proto";
+
+// Reserved combinations
+message ReservedCombinations {
+  reserved 2, 15, 9 to 11;
+  reserved "foo", "bar";
+
+  string field1 = 1;
+  int32 field3 = 3;
+  string field12 = 12;
+}
+
+// Oneof variations
+message OneofVariations {
+  oneof test_oneof {
+    string name = 1;
+    int32 id = 2;
+    bytes data = 3;
+    NestedMessage nested = 4;
+  }
+
+  oneof another_oneof {
+    bool flag = 5;
+    double value = 6;
+  }
+
+  string regular_field = 7;
+}
+
+// Deep nesting
+message Level1 {
+  message Level2 {
+    message Level3 {
+      message Level4 {
+        string deep_field = 1;
+
+        enum DeepEnum {
+          DEEP_UNKNOWN = 0;
+          DEEP_VALUE = 1;
+        }
+
+        DeepEnum deep_enum = 2;
+      }
+
+      Level4 level4 = 1;
+    }
+
+    Level3 level3 = 1;
+  }
+
+  Level2 level2 = 1;
+}
+
+message NestedMessage {
+  string name = 1;
+}
+
+// Enum with reserved
+enum EnumWithReserved {
+  reserved 2, 15, 9 to 11;
+  reserved "RESERVED_NAME";
+
+  ENUM_UNKNOWN = 0;
+  ENUM_VALUE1 = 1;
+  ENUM_VALUE3 = 3;
+}
+
+// Empty message
+message EmptyMessage {
+}
+
+// Single field message
+message SingleField {
+  string only_field = 1;
+}
+
+// Message with many fields
+message ManyFields {
+  string field1 = 1;
+  string field2 = 2;
+  string field3 = 3;
+  string field4 = 4;
+  string field5 = 5;
+  string field6 = 6;
+  string field7 = 7;
+  string field8 = 8;
+  string field9 = 9;
+  string field10 = 10;
+  string field11 = 11;
+  string field12 = 12;
+  string field13 = 13;
+  string field14 = 14;
+  string field15 = 15;
+  string field16 = 16;
+  string field17 = 17;
+  string field18 = 18;
+  string field19 = 19;
+  string field20 = 20;
+}
+
+// Boundary field numbers
+message BoundaryFieldNumbers {
+  string field_1 = 1;                    // min field number
+  string field_max_normal = 536870911;   // max normal field number
+}
+
+// Enum with negative and boundary values
+enum BoundaryEnumValues {
+  ZERO = 0;
+  POSITIVE = 1;
+  NEGATIVE = -1;
+  LARGE_POSITIVE = 2147483647;           // max int32
+  LARGE_NEGATIVE = -2147483648;          // min int32
+}
+
+// Nested enum
+message MessageWithNestedEnum {
+  enum NestedEnum {
+    NESTED_UNKNOWN = 0;
+    NESTED_VALUE1 = 1;
+    NESTED_VALUE2 = 2;
+  }
+
+  NestedEnum status = 1;
+}
+
+// Special characters in defaults and field names
+message SpecialCharacters {
+  string unicode_field = 1;
+  bytes binary_field = 2;
+}
+
+// Streaming service
+service StreamingService {
+  rpc UnaryCall(EmptyMessage) returns (EmptyMessage);
+  rpc ServerStream(EmptyMessage) returns (stream EmptyMessage);
+  rpc ClientStream(stream EmptyMessage) returns (EmptyMessage);
+  rpc BiDirectionalStream(stream EmptyMessage) returns (stream EmptyMessage);
+}

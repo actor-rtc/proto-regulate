@@ -115,9 +115,7 @@ message Msg { string field = 1; }"#;
 #[test]
 fn test_wrapper_function() {
     // 演示如何包装成用户期望的签名
-    fn merge_to_tuples(
-        files: Vec<String>,
-    ) -> anyhow::Result<Vec<(String, String, String)>> {
+    fn merge_to_tuples(files: Vec<String>) -> anyhow::Result<Vec<(String, String, String)>> {
         let file_refs: Vec<&str> = files.iter().map(|s| s.as_str()).collect();
         let results = merge_by_package(file_refs)?;
         Ok(results

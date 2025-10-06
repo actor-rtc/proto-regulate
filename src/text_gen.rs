@@ -5,9 +5,9 @@
 
 use anyhow::Result;
 use protobuf::descriptor::{
+    field_descriptor_proto::{Label, Type},
     DescriptorProto, EnumDescriptorProto, EnumValueDescriptorProto, FieldDescriptorProto,
     FileDescriptorProto, MethodDescriptorProto, OneofDescriptorProto, ServiceDescriptorProto,
-    field_descriptor_proto::{Label, Type},
 };
 use std::fmt::Write;
 
@@ -1241,6 +1241,12 @@ impl TextGenerator {
     }
 }
 
+/// Convenience function to convert a FileDescriptorProto to proto text.
+pub fn descriptor_to_proto(file: &FileDescriptorProto) -> Result<String> {
+    let mut generator = TextGenerator::with_default();
+    generator.format_file(file)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -1278,10 +1284,4 @@ mod tests {
         assert_eq!(generator.format_type_name("foo.Bar"), "foo.Bar");
         assert_eq!(generator.format_type_name(".Bar"), "Bar");
     }
-}
-
-/// Convenience function to convert a FileDescriptorProto to proto text.
-pub fn descriptor_to_proto(file: &FileDescriptorProto) -> Result<String> {
-    let mut generator = TextGenerator::with_default();
-    generator.format_file(file)
 }

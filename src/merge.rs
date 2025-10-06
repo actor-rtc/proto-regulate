@@ -3,8 +3,8 @@
 //! Merges multiple proto file contents by package name, producing
 //! normalized, deduplicated output with semantic fingerprints.
 
-use crate::text_gen::{TEXT_GENERATOR_VERSION, TextGenerator, TextGeneratorOptions};
-use anyhow::{Context, Result, anyhow, bail};
+use crate::text_gen::{TextGenerator, TextGeneratorOptions, TEXT_GENERATOR_VERSION};
+use anyhow::{anyhow, bail, Context, Result};
 use protobuf::descriptor::FileDescriptorProto;
 use protobuf_parse::Parser;
 use std::collections::{BTreeMap, BTreeSet, HashMap};
@@ -242,8 +242,7 @@ fn validate_syntax_consistency<'a>(
 
     if syntaxes.len() > 1 {
         bail!(
-            "Syntax version conflict: found {:?}. All files in the same package must use the same syntax version.",
-            syntaxes
+            "Syntax version conflict: found {syntaxes:?}. All files in the same package must use the same syntax version."
         );
     }
 
@@ -335,12 +334,7 @@ fn merge_messages(files: &[ParsedFile], merged: &mut FileDescriptorProto) -> Res
 
             // Check for duplicates
             if let Some(&prev_idx) = seen_names.get(name) {
-                bail!(
-                    "Duplicate message '{}' found in files #{} and #{}",
-                    name,
-                    prev_idx,
-                    file_idx
-                );
+                bail!("Duplicate message '{name}' found in files #{prev_idx} and #{file_idx}");
             }
 
             seen_names.insert(name.to_string(), file_idx);
@@ -365,12 +359,7 @@ fn merge_enums(files: &[ParsedFile], merged: &mut FileDescriptorProto) -> Result
 
             // Check for duplicates
             if let Some(&prev_idx) = seen_names.get(name) {
-                bail!(
-                    "Duplicate enum '{}' found in files #{} and #{}",
-                    name,
-                    prev_idx,
-                    file_idx
-                );
+                bail!("Duplicate enum '{name}' found in files #{prev_idx} and #{file_idx}");
             }
 
             seen_names.insert(name.to_string(), file_idx);
@@ -395,12 +384,7 @@ fn merge_services(files: &[ParsedFile], merged: &mut FileDescriptorProto) -> Res
 
             // Check for duplicates
             if let Some(&prev_idx) = seen_names.get(name) {
-                bail!(
-                    "Duplicate service '{}' found in files #{} and #{}",
-                    name,
-                    prev_idx,
-                    file_idx
-                );
+                bail!("Duplicate service '{name}' found in files #{prev_idx} and #{file_idx}");
             }
 
             seen_names.insert(name.to_string(), file_idx);

@@ -11,7 +11,44 @@ Protobuf file normalization, merging and formatting tools.
 
 ## Usage
 
-### Merge proto files by package
+### CLI Tool
+
+The package provides a CLI tool for debugging and testing:
+
+#### Normalize single file
+
+```bash
+# Output to stdout
+proto-regulate normalize input.proto
+
+# Output to file
+proto-regulate normalize input.proto -o output.proto
+```
+
+#### Normalize directory (merge by package and split)
+
+```bash
+# Merge all proto files in directory by package and split to output directory
+proto-regulate normalize /path/to/protos -o /path/to/output
+```
+
+#### Inspect proto descriptor
+
+```bash
+# View detailed descriptor information
+proto-regulate inspect input.proto
+```
+
+#### Verbose logging
+
+```bash
+# Enable verbose logging with -v flag
+proto-regulate -v normalize input.proto
+```
+
+### Library Usage
+
+#### Merge proto files by package
 
 ```rust
 use proto_regulate::merge_by_package;

@@ -1,5 +1,5 @@
 //! Proto-regulate: Protobuf file normalization, merging and formatting tools
-//! 
+//!
 //! This library provides tools for:
 //! - Merging multiple proto files by package
 //! - Normalizing proto file formatting
@@ -68,10 +68,10 @@ pub fn parse_proto_to_file_descriptor(proto_content: &str) -> Result<FileDescrip
 pub fn generate_fingerprint(proto_content: &str) -> Result<String> {
     let descriptor = parse_proto_to_file_descriptor(proto_content)?;
     let normalized = text_gen::descriptor_to_proto(&descriptor)?;
-    
+
     let mut hasher = Sha256::new();
     hasher.update(normalized.as_bytes());
     let hash_result = hasher.finalize();
-    
+
     Ok(format!("{hash_result:x}"))
 }
